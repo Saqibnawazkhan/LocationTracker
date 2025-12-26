@@ -112,14 +112,23 @@ def save_location():
     latitude = data.get('latitude')
     longitude = data.get('longitude')
     accuracy = data.get('accuracy')
+    location_type = data.get('type', 'gps')
 
     if tracking_id in tracking_data:
-        tracking_data[tracking_id]['location'] = {
-            'latitude': latitude,
-            'longitude': longitude,
-            'accuracy': accuracy,
-            'timestamp': datetime.now().isoformat()
-        }
+        # Only update if we don't have GPS location yet, or if this is GPS
+        current_location = tracking_data[tracking_id].get('location')
+        if current_location is None or location_type == 'gps' or current_location.get('type') == 'ip':
+            tracking_data[tracking_id]['location'] = {
+                'latitude': latitude,
+                'longitude': longitude,
+                'accuracy': accuracy,
+                'type': location_type,
+                'city': data.get('city'),
+                'region': data.get('region'),
+                'country': data.get('country'),
+                'ip': data.get('ip'),
+                'timestamp': datetime.now().isoformat()
+            }
         tracking_data[tracking_id]['accessed'] = True
         return jsonify({'success': True})
 

