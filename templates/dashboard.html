@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .tracking-list {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tracking-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .tracking-item:last-child {
+            border-bottom: none;
+        }
+
+        .tracking-id {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .location-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .status-received {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #667eea;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            background: #5a6fd6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Tracker</a>
+
+        <header>
+            <h1>Tracking Dashboard</h1>
+            <p>View all tracked locations</p>
+        </header>
+
+        <button class="btn" onclick="loadData()">Refresh Data</button>
+
+        <div id="map"></div>
+
+        <div class="tracking-list" id="tracking-list">
+            <div class="no-data">Loading...</div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('map').setView([20, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        const markers = [];
+
+        function loadData() {
+            fetch('/api/all-locations')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        displayData(result.data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading data:', error);
+                });
+        }
+
+        function displayData(data) {
+            const listContainer = document.getElementById('tracking-list');
+
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers.length = 0;
+
+            if (Object.keys(data).length === 0) {
+                listContainer.innerHTML = '<div class="no-data">No tracking data yet. Generate a tracking link and share it!</div>';
+                return;
+            }
+
+            let html = '';
+            const bounds = [];
+
+            for (const [trackingId, info] of Object.entries(data)) {
+                const hasLocation = info.location !== null;
+
+                html += `
+                    <div class="tracking-item">
+                        <span class="tracking-id">${trackingId}</span>
+                        <div class="location-info">
+                            ${hasLocation
+                                ? `Lat: ${info.location.latitude.toFixed(6)}, Lng: ${info.location.longitude.toFixed(6)}<br>
+                                   <small>Accuracy: ${info.location.accuracy.toFixed(0)}m | ${new Date(info.location.timestamp).toLocaleString()}</small>`
+                                : `Phone: ${info.phone_number || 'N/A'}<br><small>Created: ${new Date(info.created_at).toLocaleString()}</small>`
+                            }
+                        </div>
+                        <span class="status-badge ${hasLocation ? 'status-received' : 'status-pending'}">
+                            ${hasLocation ? 'Location Received' : 'Pending'}
+                        </span>
+                    </div>
+                `;
+
+                if (hasLocation) {
+                    const marker = L.marker([info.location.latitude, info.location.longitude])
+                        .addTo(map)
+                        .bindPopup(`
+                            <strong>Tracking ID:</strong> ${trackingId}<br>
+                            <strong>Phone:</strong> ${info.phone_number || 'N/A'}<br>
+                            <strong>Time:</strong> ${new Date(info.location.timestamp).toLocaleString()}<br>
+                            <strong>Accuracy:</strong> ${info.location.accuracy.toFixed(0)} meters
+                        `);
+                    markers.push(marker);
+                    bounds.push([info.location.latitude, info.location.longitude]);
+                }
+            }
+
+            listContainer.innerHTML = html;
+
+            // Fit map to markers
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+        }
+
+        // Load data on page load
+        loadData();
+
+        // Auto-refresh every 10 seconds
+        setInterval(loadData, 10000);
+    </script>
+</body>
+</html>

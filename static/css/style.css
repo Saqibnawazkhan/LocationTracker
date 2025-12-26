@@ -1,0 +1,318 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+header p {
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.tab-btn {
+    padding: 12px 30px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tab-btn.active {
+    background: white;
+    color: #667eea;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.card .description {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* Input Groups */
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* Buttons */
+.btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn.secondary {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.btn.secondary:hover {
+    background: #e0e0e0;
+}
+
+/* Result Boxes */
+.result-box {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 20px;
+}
+
+.result-box h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Info Grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.info-item .label {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.info-item .value {
+    display: block;
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Error Box */
+.error-box {
+    background: #fee;
+    border: 1px solid #fcc;
+    color: #c00;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+/* Pending Box */
+.pending-box {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Link Box */
+.link-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.link-box input {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+}
+
+.note {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.tracking-id-info {
+    background: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* Map Container */
+.map-container {
+    height: 300px;
+    border-radius: 15px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+/* Locations List */
+.locations-list {
+    margin-top: 20px;
+}
+
+.location-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 15px;
+    align-items: center;
+}
+
+.location-item .tracking-id {
+    font-family: monospace;
+    background: #667eea;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.location-item .coords {
+    font-size: 14px;
+    color: #666;
+}
+
+.location-item .status {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.location-item .status.received {
+    background: #d4edda;
+    color: #155724;
+}
+
+.location-item .status.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tab-btn {
+        width: 100%;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    .link-box {
+        flex-direction: column;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}

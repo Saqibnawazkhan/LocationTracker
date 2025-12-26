@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Location Tracker</h1>
+            <p>Track phone number info & request live location with consent</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="lookup">Phone Lookup</button>
+            <button class="tab-btn" data-tab="track">Location Tracker</button>
+            <button class="tab-btn" data-tab="dashboard">Dashboard</button>
+        </div>
+
+        <!-- Phone Lookup Tab -->
+        <div id="lookup" class="tab-content active">
+            <div class="card">
+                <h2>Phone Number Lookup</h2>
+                <p class="description">Enter a phone number to find its registered country, carrier, and region.</p>
+
+                <div class="input-group">
+                    <input type="tel" id="phone-input" placeholder="Enter phone number (e.g., +1234567890)">
+                    <button id="lookup-btn" class="btn primary">Lookup</button>
+                </div>
+
+                <div id="lookup-result" class="result-box hidden">
+                    <h3>Phone Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Phone Number</span>
+                            <span id="result-phone" class="value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Country</span>
+                            <span id="result-country" class="value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Country Code</span>
+                            <span id="result-code" class="value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Carrier</span>
+                            <span id="result-carrier" class="value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Number Type</span>
+                            <span id="result-type" class="value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Timezone(s)</span>
+                            <span id="result-timezone" class="value"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="lookup-error" class="error-box hidden"></div>
+            </div>
+        </div>
+
+        <!-- Location Tracker Tab -->
+        <div id="track" class="tab-content">
+            <div class="card">
+                <h2>Generate Tracking Link</h2>
+                <p class="description">Create a link to send to someone. When they click it and grant permission, you'll see their location.</p>
+
+                <div class="input-group">
+                    <input type="tel" id="track-phone" placeholder="Enter target phone number (optional)">
+                    <button id="generate-btn" class="btn primary">Generate Link</button>
+                </div>
+
+                <div id="link-result" class="result-box hidden">
+                    <h3>Tracking Link Generated</h3>
+                    <div class="link-box">
+                        <input type="text" id="tracking-url" readonly>
+                        <button id="copy-btn" class="btn secondary">Copy</button>
+                    </div>
+                    <p class="note">Send this link to the person. When they click it and allow location access, their location will appear in the dashboard.</p>
+                    <div class="tracking-id-info">
+                        <span>Tracking ID: </span>
+                        <strong id="tracking-id-display"></strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Check Location by Tracking ID</h2>
+                <div class="input-group">
+                    <input type="text" id="check-tracking-id" placeholder="Enter tracking ID">
+                    <button id="check-btn" class="btn primary">Check</button>
+                </div>
+
+                <div id="location-result" class="result-box hidden">
+                    <h3>Location Found</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Latitude</span>
+                            <span id="loc-lat" class="value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Longitude</span>
+                            <span id="loc-lng" class="value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Accuracy</span>
+                            <span id="loc-accuracy" class="value"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Timestamp</span>
+                            <span id="loc-time" class="value"></span>
+                        </div>
+                    </div>
+                    <div id="single-map" class="map-container"></div>
+                </div>
+
+                <div id="location-pending" class="pending-box hidden">
+                    <p>Location not yet received. The person hasn't clicked the link or hasn't granted permission.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <div class="card">
+                <h2>All Tracked Locations</h2>
+                <button id="refresh-btn" class="btn secondary">Refresh</button>
+
+                <div id="dashboard-map" class="map-container"></div>
+
+                <div id="locations-list" class="locations-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

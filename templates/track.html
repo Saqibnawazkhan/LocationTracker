@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Location</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+            display: block;
+        }
+
+        .privacy-note {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📍</div>
+        <h1>Location Request</h1>
+        <p>Someone has requested to see your current location. Click the button below to share your location.</p>
+
+        <div class="buttons">
+            <button class="btn btn-primary" id="share-btn">Share My Location</button>
+            <button class="btn btn-secondary" id="decline-btn">Decline</button>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <div class="privacy-note">
+            <strong>Privacy Notice:</strong> Your location will only be shared once when you click the button.
+            You can decline if you don't want to share your location.
+        </div>
+    </div>
+
+    <script>
+        const trackingId = "{{ tracking_id }}";
+        const statusDiv = document.getElementById('status');
+        const shareBtn = document.getElementById('share-btn');
+        const declineBtn = document.getElementById('decline-btn');
+
+        shareBtn.addEventListener('click', function() {
+            if (!navigator.geolocation) {
+                showStatus('error', 'Geolocation is not supported by your browser.');
+                return;
+            }
+
+            showStatus('loading', 'Getting your location...');
+            shareBtn.disabled = true;
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const data = {
+                        tracking_id: trackingId,
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy
+                    };
+
+                    fetch('/save-location', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            showStatus('success', 'Location shared successfully! You can close this page now.');
+                            shareBtn.style.display = 'none';
+                            declineBtn.style.display = 'none';
+                        } else {
+                            showStatus('error', 'Failed to save location. Please try again.');
+                            shareBtn.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        showStatus('error', 'An error occurred. Please try again.');
+                        shareBtn.disabled = false;
+                    });
+                },
+                function(error) {
+                    let message = 'Unable to get your location.';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'You denied the location request. Please allow location access and try again.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'The request to get your location timed out.';
+                            break;
+                    }
+                    showStatus('error', message);
+                    shareBtn.disabled = false;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        });
+
+        declineBtn.addEventListener('click', function() {
+            showStatus('error', 'You chose not to share your location. You can close this page.');
+            shareBtn.style.display = 'none';
+            declineBtn.style.display = 'none';
+        });
+
+        function showStatus(type, message) {
+            statusDiv.className = 'status ' + type;
+            statusDiv.textContent = message;
+        }
+    </script>
+</body>
+</html>
